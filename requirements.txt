@@ -1,5 +1,0 @@
-streamlit
-wikipedia
-transformers
-torch
-sentencepiece
