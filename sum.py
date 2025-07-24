@@ -2,7 +2,6 @@ import streamlit as st
 import wikipedia
 from transformers import pipeline
 
-# --- Streamlit Page Settings ---
 st.set_page_config(page_title="Animal Species Info Generator", layout="centered")
 st.title("🦁 Animal Species & Class Information")
 
