@@ -1,18 +1,13 @@
-#!/usr/bin/env python
-# coding: utf-8
-
 import streamlit as st
 import requests
 from SPARQLWrapper import SPARQLWrapper, JSON
 
-# UI setup
+
 st.set_page_config(page_title="Animal Classifier", page_icon="🧬")
 st.title("🦁 Animal Species & Class Information")
 st.markdown("Enter an animal name (common or scientific) to get its Wikipedia summary and full scientific classification.")
 
 animal_input = st.text_input("🔍 Enter animal name:")
-
-# --- Functions ---
 
 def get_wikipedia_summary(name):
     URL = "https://en.wikipedia.org/w/api.php"
@@ -26,7 +21,7 @@ def resolve_qid(name):
         "action":"wbsearchentities","format":"json","language":"en","search":name,"limit":1}).json()
     return resp["search"][0]["id"] if resp.get("search") else None
 
-# SPARQL-based taxonomy lookup
+
 def sparql_rank(qid):
     query = f"""
     SELECT ?rank ?rankLabel WHERE {{
@@ -42,7 +37,7 @@ def sparql_rank(qid):
     data = sparql.query().convert()["results"]["bindings"]
     return {d["rank"]["value"].split("/")[-1]: d["rankLabel"]["value"] for d in data}
 
-# REST-based fallback traversal
+
 def rest_taxonomy(qid, found):
     def get_claims(q):
         return requests.get(f"https://www.wikidata.org/wiki/Special:EntityData/{q}.json").json()["entities"][q]["claims"]
@@ -65,7 +60,7 @@ def rest_taxonomy(qid, found):
             to_visit += [c["mainsnak"]["datavalue"]["value"]["id"] for c in claims["P171"]]
     return found
 
-# Hardcoded fallback for common species
+
 HARDCODE = {
     "Tiger": {"Class": "Mammalia", "Order": "Carnivora", "Family": "Felidae"},
     "Panthera tigris": {"Class": "Mammalia", "Order": "Carnivora", "Family": "Felidae"},
@@ -262,7 +257,7 @@ def classify(name):
         result = rest_taxonomy(qid, result)
     return result if len(result) == 3 else None
 
-# --- Main UI Logic ---
+
 
 if st.button("Generate Information") and animal_input:
     name = animal_input.strip()
