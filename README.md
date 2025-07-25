@@ -1,1 +1,0 @@
-# Wildlens - Insect Detection
